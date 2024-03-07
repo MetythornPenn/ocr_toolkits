@@ -1,0 +1,5 @@
+dist/
+build/
+khmerocr_tools.egg-info
+output
+labels.txt

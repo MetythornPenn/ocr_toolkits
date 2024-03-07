@@ -4,25 +4,26 @@ with open("app/README.md", "r") as f:
     long_description = f.read()
 
 setup(
-    name="idgenerator",
-    version="0.0.10",
-    description="An id generator that generated various types and lengths ids",
+    name="khmerocr-tools",
+    version="0.1",
+    description="Khmerocr_tools is a Python library that generates synthetic images containing Khmer text",
     package_dir={"": "app"},
+    package_data={'khmerocr_tools': ['font/*.ttf']},
     packages=find_packages(where="app"),
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ArjanCodes/2023-package",
-    author="ArjanCodes",
-    author_email="arjan@arjancodes.com",
+    url="https://github.com/MetythornPenn/khmerocr_tools",
+    author="Metythorn Penn",
+    author_email="Metythorn.com",
     license="MIT",
     classifiers=[
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: >=3.8",
         "Operating System :: OS Independent",
     ],
-    install_requires=["bson >= 0.5.10"],
-    extras_require={
-        "dev": ["pytest>=7.0", "twine>=4.0.2"],
-    },
-    python_requires=">=3.10",
+    install_requires=["Pillow>=10.2.0"],
+    # extras_require={
+    #     "dev": ["twine>=4.0.2"],
+    # },
+    python_requires=">=3.8",
 )
