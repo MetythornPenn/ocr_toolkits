@@ -59,6 +59,7 @@ def synthetic_data(file_path, image_height, output_folder, output_labels_file, f
                 
                 text_color = "black"
 
+                # Use the specified font when drawing text
                 d1.text(text_position, text, fill=text_color, font=font)
 
                 # Random blur
@@ -79,14 +80,12 @@ def synthetic_data(file_path, image_height, output_folder, output_labels_file, f
                 print('Generate image:', output_path + ' | ' + text)
                 counter += 1
 
-# def main():
-#     image_height = 128
-#     output_folder = 'output'
-#     output_labels_file = 'labels.txt'
-#     text_file_path = "dict.txt"  # Change this to your text file path
-#     font_option = []  # Select font options here, e.g., [1] for Khmer OS Muol Light Regular, [2] for Khmer OS Battambang Regular, or [] for all fonts
+# Example usage:
+# image_height = 128
+# output_folder = 'output'
+# output_labels_file = 'labels.txt'
+# text_file_path = "dict.txt"  # Change this to your text file path
+# font_option = []  # Select font options here, e.g., [1] for Khmer OS Muol Light Regular, [2] for Khmer OS Battambang Regular, or [] for all fonts
 
-#     synthetic_data(text_file_path, image_height, output_folder, output_labels_file, font_option=font_option, random_blur=True)
+# synthetic_data(text_file_path, image_height, output_folder, output_labels_file, font_option=font_option, random_blur=True)
 
-# if __name__ == "__main__":
-#     main()

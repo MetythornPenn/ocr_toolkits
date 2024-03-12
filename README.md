@@ -24,18 +24,23 @@ pip install khmerocr_tools
 
 ## Usage
 
+- create text file to words list eg. dict.txt and put all khmer words you want to gnerate or download [sample data here](https://github.com/MetythornPenn/khmerocr_tools/blob/main/dict.txt)
+
+- create a folder call font and download all font from this link : [font](https://github.com/MetythornPenn/khmerocr_tools/tree/main/font)
+
+- create python script to generate data eg. test.py
 ```python
-from khmerocr_tools import synthetics_data
+from khmerocr_tools import synthetic_data
 
 # Set parameters
 image_height = 128
 output_folder = 'output'
-output_labels_file = 'labels.txt'
-text_file_path = "text.txt"
+output_labels_file = 'output/labels.txt'
+text_file_path = "dict.txt"
 font_option = [1, 2]  
 
 # Generate images and labels
-synthetics_data(
+synthetic_data(
     text_file_path, 
     image_height, 
     output_folder, 
