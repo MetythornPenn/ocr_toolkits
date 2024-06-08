@@ -1,4 +1,4 @@
-# Khmerocr_tools | Synthetic Data Generator
+# ocr_toolkits
 
 ## Introduction
 
@@ -12,13 +12,12 @@ The Khmer Text Image Generator is a Python library that generates synthetic imag
 - Option to apply random blur effect to images
 - Generate corresponding labels for each image
 
-
 ## Installation
 
 You can install the Khmer Text Image Generator using pip:
 
 ```bash
-pip install khmerocr_tools
+pip install ocr_toolkits
 ```
 
 
