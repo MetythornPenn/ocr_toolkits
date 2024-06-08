@@ -1,4 +1,4 @@
-# ocr_toolkits
+# OCR toolkits
 
 ## Introduction
 
