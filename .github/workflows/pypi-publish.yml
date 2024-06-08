@@ -1,10 +1,10 @@
 name: PyPI
 
 on:
-  # push
+  push
 
-  release:
-    types: [created]
+  # release:
+  #   types: [created]
 
 jobs:
   deploy:
