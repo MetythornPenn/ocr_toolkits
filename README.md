@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The Khmer Text Image Generator is a Python library that generates synthetic images containing Khmer text for use in training optical character recognition (OCR) models. It allows users to customize various aspects of the generated images, such as the text content, font style, background color, and blur effect.
+Collection of functions to work with ocr and synthetic data generater
 
 ## Features
 
