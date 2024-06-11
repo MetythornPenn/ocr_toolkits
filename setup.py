@@ -15,7 +15,7 @@ requirements = [
 
 setup(
     name="ocr-toolkits",
-    version="0.0.2",
+    version="0.0.3",
     packages=find_packages(exclude=["tests", "tests.*"]),
     package_data={
         'ocr-tools': [
