@@ -1,6 +1,6 @@
 # Ref:  https://realpython.com/python-project-documentation-with-mkdocs/
 
-site_name: PyKhmerNLP
+site_name: OCR_Toolkits
 site_description: Collection of Khmer Language Toolkits.
 site_url: https://metythornpenn.github.io/ocr_toolkits/
 
