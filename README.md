@@ -93,6 +93,32 @@ resized_image = resize_image(
 
 ```
 
+### resize image 
+```python
+from ocr_toolkits import resize_h_128
+
+resized_image = resize_h_128(
+    image_path='./images/img.jpg', 
+    save=True,
+    save_path='save.jpg'
+)
+
+```
+
+### resize image 
+```python
+from ocr_toolkits import to_grayscale
+
+resized_image = to_grayscale(
+    image_path='./images/img.jpg', 
+    save=True,
+    save_path='save.jpg'
+)
+
+```
+
+### synthetic data
+
 - create text file to words list eg. dict.txt and put all khmer words you want to gnerate or download [sample data here](https://github.com/MetythornPenn/khmerocr_tools/blob/main/dict.txt)
 
 - create a folder call font and download all font from this link : [font](https://github.com/MetythornPenn/khmerocr_tools/tree/main/font)
