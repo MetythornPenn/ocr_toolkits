@@ -8,6 +8,9 @@ def read(*paths):
 
 requirements = [
     "Pillow",
+    "jellyfish",
+    "opencv-python",
+    "numpy"
 ]
 
 setup(
