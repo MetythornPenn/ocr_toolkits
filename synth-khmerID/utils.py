@@ -5,6 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 import random
 import string
 
+
 from datetime import datetime, timedelta
 import os
 from pykhmernlp.corpus import km_words, en_words
@@ -209,4 +210,23 @@ def generate_mrz_3() -> str:
 
 
 
+
+def get_random_image_path(folder_path):
+  try:
+    files = os.listdir(folder_path)
+    images = [file for file in files if file.lower().endswith((".jpg", ".jpeg", ".png"))]
+
+    if not images:
+      return None
+
+    random_image = random.choice(images)
+
+    return os.path.join(folder_path, random_image)
+  except FileNotFoundError:
+    print(f"Error: Folder '{folder_path}' not found.")
+    return None
+
+# Example usage
+# photo_folder = "./photos"
+# photo_path = get_random_image_path(photo_folder)
 
