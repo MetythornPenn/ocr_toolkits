@@ -1,106 +1,223 @@
+import json, os
+from PIL import Image, ImageDraw, ImageFont
+
+from pykhmernlp.number import to_khmer_num
+from pykhmernlp.tokenizer import khmercut
+
 from utils import (
-    generate_commune_and_district,
-    to_khmer_numeral,
     generate_dob,
     generate_gender,
+    generate_height,
     generate_place_of_birth,
-    generate_address,
+    generate_address_1,
+    generate_address_2,
     generate_id_number,
-    generate_issue_and_expiry_dates,
-    download_image,
     generate_khmer_name,
     generate_english_name,
+    generate_mrz_1,
+    generate_mrz_2,
+    generate_mrz_3,
+    get_random_image_path,
 )
 
+# Define the font path and size
+font_paths = {
+    "bokor": "fonts/ocr_b.ttf",
+    "content_bold": "fonts/content_bold.ttf",
+    "dejavu": "fonts/DejaVuSansMono.ttf",
+    "khmeros": "fonts/Khmer OS Content.ttf",
+    "khmer_moul": "fonts/khmer_moul.ttf",
+    "ocrb": "fonts/ocr_b.ttf"
+}
 
-# Function to generate ID card
-def generate_id_card(row, index):
-    id_card = Image.new('RGB', (400, 260), color='white')
-    draw = ImageDraw.Draw(id_card)
+font_size = 12
+fonts = {
+    name: ImageFont.truetype(path, font_size) for name, path in font_paths.items()
+}
+fonts["content_bold"] = ImageFont.truetype(font_paths["content_bold"], 55)
+fonts["ocrb_large"] = ImageFont.truetype(font_paths["ocrb"], 50)
+fonts["mrz"] = ImageFont.truetype(font_paths["ocrb"], 75)
+fonts["khmeros"] = ImageFont.truetype(font_paths["khmeros"], 32)
+fonts["khmer_moul"] = ImageFont.truetype(font_paths["khmer_moul"], 34)
 
-    # Load fonts
-    try:
-        font = ImageFont.truetype("fonts/bokor.ttf", 10)
-        font_id = ImageFont.truetype("fonts/content_bold.ttf", 14)
-        font_moul = ImageFont.truetype("fonts/khmer_moulight.ttf", 11)
-        font_small = ImageFont.truetype("fonts/Khmer OS Content.ttf", 10)
-        mrz_font = ImageFont.truetype("fonts/ocr_b.ttf", 20)
-    except OSError:
-        print("Font file not found.")
-        return
+# Directories for saving images and annotations
+output_image_dir = "./data/synth-khmerID/images"
+output_annotation_dir = "./data/synth-khmerID/annotations"
 
-    # Add photos
-    photo_url = f'https://randomuser.me/api/portraits/{"men" if row["gender"] == "ប្រុស" else "women"}/{random.randint(0, 99)}.jpg'
-    photo_filename = f"photos/{index + 1:06d}.png"
-    if download_image(photo_url, photo_filename):
-        photo = Image.open(photo_filename).resize((90, 140))
-        id_card.paste(photo, (15, 35))
+# Create directories if they do not exist
+os.makedirs(output_image_dir, exist_ok=True)
+os.makedirs(output_annotation_dir, exist_ok=True)
 
-    # Add personal information
-    draw.text((300, 5), row['id_number'], font=font_id, fill='black')
+# Function to generate a single ID card image and its annotation
+def generate_id_card_image(index):
+    # Create a blank white image
+    width, height = 1575, 1024
+    image = Image.new('RGB', (width, height), 'white')
 
-    # Draw the name with different fonts
-    draw.text((120, 30), f"គោត្តនាមនិងនាម: ", font=font, fill='black')
-    draw.text((190, 30), f"{row['name']}", font=font_moul, fill='black')
-    draw.text((190, 50), f"{row['english_name'].upper()}", font=font_small, fill='black')
+    # Create a drawing context
+    draw = ImageDraw.Draw(image)
 
-    draw.text((120, 70), f"ថ្ងៃខែឆ្នាំកំណើត: ", font=font, fill='black')
-    draw.text((180, 72), f"{to_khmer_numeral(row['dob'][:2])}.{to_khmer_numeral(row['dob'][3:5])}.{to_khmer_numeral(row['dob'][6:])} ", font=font_small, fill='black')
+    # Get a random photo path and paste it on the image
+    photo_folder = "photos"
+    photo_path = get_random_image_path(photo_folder)
+    photo = Image.open(photo_path).resize((320, 500))
+    image.paste(photo, (55, 80))
 
-    draw.text((250, 70), f"ភេទ: ", font=font, fill='black')
-    draw.text((275, 72), f"{row['gender']} ", font=font_small, fill='black')
+    bbox_data = {"id_card": []}
 
-    draw.text((300, 70), f"កំពស់:", font=font, fill='black')
-    draw.text((330, 72), f"{to_khmer_numeral(str(random.randint(150, 190)))}", font=font_small, fill='black')
-    draw.text((360, 70), f"ស.ម", font=font, fill='black')
+    def draw_bbox(draw, x1, y1, text, font):
+        bbox = draw.textbbox((0, 0), text, font=font)
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+        padding_x, padding_y = 10, 10
 
-    draw.text((120, 90), f"ទីកន្លែងកំណើត: ", font=font, fill='black')
-    draw.text((180, 92), f"{row['place_of_birth']}", font=font_small, fill='black')
+        x2 = x1 + text_width + 2 * padding_x
+        y2 = y1 + text_height + 2 * padding_y
 
-    address_lines = row['address'].splitlines()
-    draw.text((120, 110), f"អាសយដ្ឋាន: ", font=font, fill='black')
-    draw.text((170, 112), f"{address_lines[0] if len(address_lines) > 0 else ''}", font=font_small, fill='black')
-    draw.text((120, 130), f"{address_lines[1] if len(address_lines) > 1 else ''}", font=font_small, fill='black')
-    draw.text((160, 150), f"{address_lines[2] if len(address_lines) > 2 else ''}", font=font_small, fill='black')
+        draw.rectangle([x1, y1, x2, y2], outline='red')
+        text_x = x1 + padding_x
+        text_y = y1 + (y2 - y1 - text_height) // 2
+        draw.text((text_x, text_y), text, font=font, fill='black')
 
-    draw.text((120, 150), f"សុពលភាព: ", font=font, fill='black')
-    draw.text((170, 152),f"{to_khmer_numeral(row['issue_date'][:2])}.{to_khmer_numeral(row['issue_date'][3:5])}.{to_khmer_numeral(row['issue_date'][6:])}  ដល់ថ្ងៃ  {to_khmer_numeral(row['expiry_date'][0:2])}.{to_khmer_numeral(row['expiry_date'][3:5])}.{to_khmer_numeral(row['expiry_date'][6:])}", font=font_small, fill='black')
+        return x2, y2
 
-    # Generate a random 6-digit number
-    random_number = ''.join(random.choices('0123456789', k=1))
+    def draw_bbox_mrz(draw, x1, y1, text, font):
+        bbox = draw.textbbox((0, 0), text, font=font)
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+        padding_x, padding_y = 10, 10
 
-    # Add MRZ
-    gender_code = f"{random.randint(0, 9)}{'M' if row['gender'] == 'ប្រុស' else 'F'}"
-    mrz_info = (
-        f"IDKHM{row['id_number']}<<<<<<<<<<<<<<<"
-        f"\n{row['dob'][8:10]}{row['dob'][3:5]}{row['dob'][0:2]}{gender_code}{row['expiry_date'][8:10]}{row['expiry_date'][3:5]}{row['expiry_date'][0:2]}KHM<<<<<<<<<<<{random_number}"
-        f"\n{row['english_name'].upper().replace(' ', '<<')}<<<<<<<<<<<<<<<<"
-    )
-    draw.text((20, 180), mrz_info, font=mrz_font, fill='black')
+        x2 = x1 + text_width + 2 * padding_x
+        y2 = y1 + text_height + 2 * padding_y
 
-    # Save ID card
-    id_card.save(f'id_cards/{index + 1:06d}.png')
+        draw.rectangle([x1, y1, x2, y2 + 15], outline='red')
+        text_x = x1 + padding_x
+        text_y = y1 + (y2 - y1 - text_height) // 2
+        draw.text((text_x, text_y), text, font=font, fill='black')
 
+        return x2, y2
 
-# Sample DataFrame with 5 records
-data = pd.DataFrame({
-    'name': [generate_khmer_name() for _ in range(5)],
-    'english_name': [generate_english_name() for _ in range(5)],
-    'dob': [generate_dob() for _ in range(5)],
-    'gender': [generate_gender() for _ in range(5)],
-    'place_of_birth': [generate_place_of_birth() for _ in range(5)],
-    'address': [generate_address() for _ in range(5)],
-    'id_number': [generate_id_number() for _ in range(5)],
-    'issue_date': [generate_issue_and_expiry_dates()[0] for _ in range(5)],
-    'expiry_date': [generate_issue_and_expiry_dates()[1] for _ in range(5)]
-})
+    def add_bbox_data(bbox_id, x1, y1, x2, y2, text):
+        bbox_data["id_card"].append({
+            f"{bbox_id}": {
+                "bbox": {
+                    "x1": x1,
+                    "y1": y1,
+                    "x2": x2,
+                    "y2": y2
+                },
+                "text": text
+            }
+        })
 
-# Create directory to save ID cards
-os.makedirs('id_cards', exist_ok=True)
+    # Functions to draw and add bounding boxes for each line
+    def draw_all_bboxes():
+        id_num_bbox()
+        khm_name_bbox()
+        eng_name_bbox()
+        dob_bbox()
+        pob_bbox()
+        address_1_bbox()
+        address_2_bbox()
+        issue_expire_date_bbox()
+        identify_bbox()
+        mrz_1_bbox()
+        mrz_2_bbox()
+        mrz_3_bbox()
 
-# Generate ID cards for each record in DataFrame
-for index, row in data.iterrows():
-    generate_id_card(row, index)
+    def id_num_bbox():
+        text_id_num = generate_id_number()
+        x1, y1 = 1100, 20
+        x2, y2 = draw_bbox_mrz(draw, x1, y1, text_id_num, fonts["ocrb_large"])
+        add_bbox_data("id_num", x1, y1, x2, y2-10, text_id_num)
 
-print("All ID cards created successfully!")
-print(f"You can find the ID cards in the 'id_cards' directory: {os.path.abspath('id_cards')}")
+    def khm_name_bbox():
+        text_khmer_name = f"គោត្តនាមនិងនាម: {khmercut(generate_khmer_name())[0]} {khmercut(generate_khmer_name())[0]}"
+        x1, y1 = 400, 90
+        x2, y2 = draw_bbox(draw, x1, y1, text_khmer_name, fonts["khmer_moul"])
+        add_bbox_data("khm_name", x1, y1, x2, y2, text_khmer_name)
+
+    def eng_name_bbox():
+        text_eng_name = generate_english_name()
+        x1, y1 = 600, 165
+        x2, y2 = draw_bbox_mrz(draw, x1, y1, text_eng_name, fonts["ocrb_large"])
+        add_bbox_data("eng_name", x1, y1, x2, y2, text_eng_name)
+
+    def dob_bbox():
+        text_dob = f"ថ្ងៃខែឆ្នាំកំណើត: {generate_dob()}  ភេទ: {generate_gender()}  កំពស់: {generate_height()} ស.ម"
+        x1, y1 = 400, 240
+        x2, y2 = draw_bbox(draw, x1, y1, text_dob, fonts["khmeros"])
+        add_bbox_data("dob", x1, y1, x2, y2, text_dob)
+
+    def pob_bbox():
+        text_pob = f"ទីកន្លែងកំណើត: {generate_place_of_birth()}"
+        x1, y1 = 400, 314
+        x2, y2 = draw_bbox(draw, x1, y1, text_pob, fonts["khmeros"])
+        add_bbox_data("pob", x1, y1, x2, y2, text_pob)
+
+    def address_1_bbox():
+        text_address_1 = f"អាសយដ្ឋាន: {generate_address_1()}"
+        x1, y1 = 400, 390
+        x2, y2 = draw_bbox(draw, x1, y1, text_address_1, fonts["khmeros"])
+        add_bbox_data("address_1", x1, y1, x2, y2, text_address_1)
+
+    def address_2_bbox():
+        text_address_2 = f"{generate_address_2()}"
+        x1, y1 = 400, 470
+        x2, y2 = draw_bbox(draw, x1, y1, text_address_2, fonts["khmeros"])
+        add_bbox_data("address_2", x1, y1, x2, y2, text_address_2)
+
+    def issue_expire_date_bbox():
+        text_expire = f"សុពលភាព: {to_khmer_num(str(generate_dob()))} ដល់ថ្ងៃ {to_khmer_num(str(generate_dob()))}"
+        x1, y1 = 400, 550
+        x2, y2 = draw_bbox(draw, x1, y1, text_expire, fonts["khmeros"])
+        add_bbox_data("issue_expire_date", x1, y1, x2, y2, text_expire)
+
+    def identify_bbox():
+        text_identity = "ភិនភាគ: ប្រច្រុយចុងភ្នែកស្តាំ"
+        x1, y1 = 400, 630
+        x2, y2 = draw_bbox(draw, x1, y1, text_identity, fonts["khmeros"])
+        add_bbox_data("identify", x1, y1, x2, y2, text_identity)
+
+    def mrz_1_bbox():
+        text_mrz_1 = generate_mrz_1()
+        x1, y1 = 60, 710
+        x2, y2 = draw_bbox_mrz(draw, x1, y1, text_mrz_1, fonts["mrz"])
+        add_bbox_data("mrz_1", x1, y1, x2, y2, text_mrz_1)
+
+    def mrz_2_bbox():
+        text_mrz_2 = generate_mrz_2()
+        x1, y1 = 60, 810
+        x2, y2 = draw_bbox_mrz(draw, x1, y1, text_mrz_2, fonts["mrz"])
+        add_bbox_data("mrz_2", x1, y1, x2, y2, text_mrz_2)
+
+    def mrz_3_bbox():
+        text_mrz_3 = generate_mrz_3()
+        x1, y1 = 60, 910
+        x2, y2 = draw_bbox_mrz(draw, x1, y1, text_mrz_3, fonts["mrz"])
+        add_bbox_data("mrz_3", x1, y1, x2, y2, text_mrz_3)
+
+    # Draw the bounding boxes and add data to JSON
+    draw_all_bboxes()
+
+    # Define file paths
+    image_filename = f"{index:06d}.png"
+    annotation_filename = f"{index:06d}.json"
+    image_path = os.path.join(output_image_dir, image_filename)
+    annotation_path = os.path.join(output_annotation_dir, annotation_filename)
+
+    # Save the image
+    image.save(image_path)
+
+    # Save the bounding box data to JSON file
+    with open(annotation_path, 'w', encoding='utf-8') as json_file:
+        json.dump(bbox_data, json_file, ensure_ascii=False, indent=4)
+
+    print(f"Generated {image_filename} and {annotation_filename}")
+    
+    
+    
+if __name__ == "__main__":
+    # Generate 100 images and their corresponding annotations
+    for i in range(1, 1001):
+        generate_id_card_image(i)
