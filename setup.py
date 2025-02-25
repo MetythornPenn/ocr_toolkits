@@ -10,7 +10,8 @@ requirements = [
     "Pillow",
     "jellyfish",
     "opencv-python",
-    "numpy"
+    "numpy",
+    "regex",
 ]
 
 setup(
@@ -23,7 +24,10 @@ setup(
             'font/Khmer MEF1 Regular.ttf',
             'font/Khmer OS Battambang Regular.ttf',
             'font/Khmer OS Muol Light Regular.ttf',
-            'font/Khmer OS Siemreap Regular.ttf'
+            'font/Khmer OS Siemreap Regular.ttf',
+            'data/phum/*.txt',
+            'data/khum/*.txt',
+            'data/*.txt'
         ],
     },
     include_package_data=True,
