@@ -16,7 +16,7 @@ requirements = [
 
 setup(
     name="ocr-toolkits",
-    version="0.0.3",
+    version="0.0.4",
     packages=find_packages(exclude=["tests", "tests.*"]),
     package_data={
         'ocr-tools': [
@@ -25,9 +25,9 @@ setup(
             'font/Khmer OS Battambang Regular.ttf',
             'font/Khmer OS Muol Light Regular.ttf',
             'font/Khmer OS Siemreap Regular.ttf',
-            'data/phum/*.txt',
-            'data/khum/*.txt',
-            'data/*.txt'
+            'address/phum/*.txt',
+            'address/khum/*.txt',
+            'address/*.txt'
         ],
     },
     include_package_data=True,
