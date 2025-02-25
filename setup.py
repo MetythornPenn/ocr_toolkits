@@ -25,9 +25,9 @@ setup(
             'font/Khmer OS Battambang Regular.ttf',
             'font/Khmer OS Muol Light Regular.ttf',
             'font/Khmer OS Siemreap Regular.ttf',
-            'data/phum/*.txt',
-            'data/khum/*.txt',
-            'data/*.txt'
+            'address/phum/*.txt',
+            'address/khum/*.txt',
+            'address/*.txt'
         ],
     },
     include_package_data=True,

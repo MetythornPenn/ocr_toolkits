@@ -79,6 +79,25 @@ corrected_gender_kh = autocorrect_gender("ស្រ", return_eng=False)
 print(corrected_gender_kh)  # Output: ស្រី
 ```
 
+### autocorrect address
+```python
+from autocorrect_kh import (
+    autocorrect_address_1, autocorrect_address_2, 
+    autocorrect_phum, autocorrect_khum, 
+    autocorrect_district, autocorrect_province
+)
+
+print(autocorrect_phum("កូមិត្រពាងថ្លង២"))  # Autocorrected Phum  
+print(autocorrect_khum("សង្កាក់ច្បាអំពៅ២"))  # Autocorrected Khum  
+print(autocorrect_district("ខណ្ឌចំករមន"))  # Autocorrected District  
+print(autocorrect_province("កំពង់ចម"))  # Autocorrected Province  
+
+# For Khmer ID card
+print(autocorrect_address_1("ផ្ទះ៤១បេ ផ្លូវ៤៤៤ ភុមិ២"))  # Autocorrected Address 1  
+print(autocorrect_address_2("សង្កាត់ទលទពូងទី ២ ខណ្ឌចំករមន ភ្នំពញ"))  # Autocorrected Address 2  
+
+```
+
 ### resize image 
 ```python
 from ocr_toolkits import resize_image
@@ -161,7 +180,8 @@ synthetic_data(
   - Use an empty list [] to select all available fonts.
 - `random_blur`: Boolean flag indicating whether to apply random blur effect to images.
 
-
+## Contributors
+- [Kim Ouddommony](https://github.com/monykappa) - Feature Development  
 
 ## License
 

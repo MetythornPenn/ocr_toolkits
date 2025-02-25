@@ -33,10 +33,10 @@ def load_autocorrect_dicts_from_resource(folder_resource: str) -> set:
     return words
 
 # Automatically load dictionaries when the package is imported.
-phum_dict = load_autocorrect_dicts_from_resource("../data/phum")
-khum_dict = load_autocorrect_dicts_from_resource("../data/khum")
-district_dict = load_autocorrect_dict_from_resource("../data/district.txt")
-province_dict = load_autocorrect_dict_from_resource("../data/province.txt")
+phum_dict = load_autocorrect_dicts_from_resource("../address/phum")
+khum_dict = load_autocorrect_dicts_from_resource("../address/khum")
+district_dict = load_autocorrect_dict_from_resource("../address/district.txt")
+province_dict = load_autocorrect_dict_from_resource("../address/province.txt")
 
 def autocorrect_word(word: str, word_set: set, max_ratio: float = 0.4, max_typo_distance: int = None) -> list:
     """Correct a word using Damerau-Levenshtein distance."""
