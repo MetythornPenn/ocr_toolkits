@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Collection of functions to work with ocr and synthetic data generater, postprocessing
+Collection of functions to work with ocr and synthetic data generater
 
 ## Features
 
@@ -11,19 +11,25 @@ Collection of functions to work with ocr and synthetic data generater, postproce
 - Choose from multiple font styles
 - Option to apply random blur effect to images
 - Generate corresponding labels for each image
+- Autocorrect address
 
 ## Installation
 
+### Install from PyPI
 You can install the Khmer Text Image Generator using pip:
 
 ```bash
 pip install ocr_toolkits
 ```
 
+### Install from PyPI
+```bash
+pip install -e .
+```
 
 ## Usage
 
-### move files from a folder to another folder filter by extension
+### 1. move files from a folder to another folder filter by extension
 ```python
 from ocr_toolkits import move_files_ext
 
@@ -41,7 +47,7 @@ move_files_ext(
 
 ```
 
-### change files extension from a folder filter by extension
+### 2. change files extension from a folder filter by extension
 ```python
 
 from ocr_toolkits import change_files_ext
@@ -54,7 +60,7 @@ change_files_ext(
 )
 ```
 
-### delete files from a folder to another folder filter by extension
+### 3. delete files from a folder to another folder filter by extension
 ```python
 from ocr_toolkits import delete_files_ext
 
@@ -66,7 +72,7 @@ delete_files_ext(
 ```
 
 
-### autocorrect gender
+### 4. autocorrect gender
 ```python
 from ocr_toolkits.postprocess import autocorrect_gender
 
@@ -79,12 +85,15 @@ corrected_gender_kh = autocorrect_gender("ស្រ", return_eng=False)
 print(corrected_gender_kh)  # Output: ស្រី
 ```
 
-### autocorrect address
+### 5. autocorrect address
 ```python
 from ocr_toolkits.postprocess import (
-    autocorrect_address_1, autocorrect_address_2, 
-    autocorrect_phum, autocorrect_khum, 
-    autocorrect_district, autocorrect_province
+    autocorrect_address_1, 
+    autocorrect_address_2, 
+    autocorrect_phum, 
+    autocorrect_khum, 
+    autocorrect_district, 
+    autocorrect_province
 )
 
 print(autocorrect_phum("កូមិត្រពាងថ្លង២"))  # Autocorrected Phum  
@@ -98,7 +107,7 @@ print(autocorrect_address_2("សង្កាត់ទលទពូងទី ២ �
 
 ```
 
-### resize image 
+### 6. resize image 
 ```python
 from ocr_toolkits import resize_image
 
@@ -112,7 +121,7 @@ resized_image = resize_image(
 
 ```
 
-### resize image 
+### 7. resize image 
 ```python
 from ocr_toolkits import resize_h_128
 
@@ -124,7 +133,7 @@ resized_image = resize_h_128(
 
 ```
 
-### resize image 
+### 8. resize image 
 ```python
 from ocr_toolkits import to_grayscale
 
@@ -136,7 +145,7 @@ resized_image = to_grayscale(
 
 ```
 
-### synthetic data
+### 9. synthetic data
 
 - create text file to words list eg. dict.txt and put all khmer words you want to gnerate or download [sample data here](https://github.com/MetythornPenn/khmerocr_tools/blob/main/dict.txt)
 
@@ -144,7 +153,7 @@ resized_image = to_grayscale(
 
 - create python script to generate data eg. test.py
 ```python
-from khmerocr_tools import synthetic_data
+from ocr_toolkits import synthetic_data
 
 # Set parameters
 image_height = 128
