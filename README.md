@@ -81,7 +81,7 @@ print(corrected_gender_kh)  # Output: ស្រី
 
 ### autocorrect address
 ```python
-from autocorrect_kh import (
+from ocr_toolkits.postprocess import (
     autocorrect_address_1, autocorrect_address_2, 
     autocorrect_phum, autocorrect_khum, 
     autocorrect_district, autocorrect_province
