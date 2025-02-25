@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Collection of functions to work with ocr and synthetic data generater
+Collection of functions to work with ocr and synthetic data generater, postprocessing
 
 ## Features
 
