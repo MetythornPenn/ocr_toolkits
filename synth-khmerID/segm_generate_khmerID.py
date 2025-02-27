@@ -19,46 +19,9 @@ from utils import (
 )
 from pykhmernlp.number import to_khmer_num
 
+# Define functions first
 def load_font(path, size):
     return ImageFont.truetype(path, size) if os.path.exists(path) else ImageFont.load_default()
-
-# Define the font paths and sizes
-font_bokor_path = "fonts/ocr_b.ttf"
-font_content_bold_path = "fonts/content_bold.ttf"
-font_dejavu_path = "fonts/DejaVuSansMono.ttf"
-font_khmeros_path = "fonts/Khmer OS Content.ttf"
-font_khmer_moul_path = "fonts/khmer_moul.ttf"
-font_ocrb_path = "fonts/ocr_b.ttf"
-
-font_size = 12
-label_font_size = 12  # Define the size for label text
-font_bokor = ImageFont.truetype(font_bokor_path, font_size)
-font_content_bold = ImageFont.truetype(font_content_bold_path, 55)
-font_dejavu = ImageFont.truetype(font_dejavu_path, font_size)
-font_khmeros = ImageFont.truetype(font_khmeros_path, font_size)
-font_khmer_moul = ImageFont.truetype(font_khmer_moul_path, font_size)
-font_ocrb = ImageFont.truetype(font_ocrb_path, font_size)
-
-mrz_font = ImageFont.truetype(font_ocrb_path, 50)
-
-width, height = 1575, 1024
-image = Image.new('RGB', (width, height), 'white')
-draw = ImageDraw.Draw(image)
-
-# Flags to control drawing of bounding boxes and labels
-DRAW_BBOX = 1  # Set to False to disable bounding boxes
-DRAW_LABEL = 1  # Set to False to disable labels
-
-photo_path = get_random_image_path("./photos")
-if photo_path:
-    photo = Image.open(photo_path).resize((320, 500))
-    image.paste(photo, (55, 80))
-
-signature_path = get_random_image_path("./signatures")
-if signature_path:
-    signature = Image.open(signature_path).resize((200, 50))
-    # Place signature below the photo (aligned with photo's left edge at x=55, below y=580)
-    image.paste(signature, (55, 600))
 
 def draw_bbox(draw, x1, y1, text, font, label):
     ascent, descent = font.getmetrics()
@@ -109,22 +72,78 @@ bbox_data = {"id_card": []}
 def add_bbox_data(bbox_id, x1, y1, x2, y2, text):
     bbox_data["id_card"].append({bbox_id: {"bbox": {"x1": x1, "y1": y1, "x2": x2, "y2": y2}, "text": text}})
 
-text_id_num = generate_id_number()
-khmer_name = generate_khmer_name()
-english_name = generate_english_name()
-dob = generate_dob()
-gender = generate_gender()
-height_val = generate_height()
-pob = generate_place_of_birth()
-address1 = generate_address_1()
-address2 = generate_address_2()
-issue_date, expiry_date = generate_issue_and_expiry_dates()
-identity = "ប្រជ្រុយចុងភ្នែកស្តាំ"
-mrz1 = generate_mrz_1()
-mrz2 = generate_mrz_2()
-mrz3 = generate_mrz_3()
+# Define the font paths and sizes
+font_bokor_path = "fonts/ocr_b.ttf"
+font_content_bold_path = "fonts/content_bold.ttf"
+font_dejavu_path = "fonts/DejaVuSansMono.ttf"
+font_khmeros_path = "fonts/Khmer OS Content.ttf"
+font_khmer_moul_path = "fonts/khmer_moul.ttf"
+font_ocrb_path = "fonts/ocr_b.ttf"
+
+font_size = 12
+label_font_size = 12  # Define the size for label text
+font_bokor = ImageFont.truetype(font_bokor_path, font_size)
+font_content_bold = ImageFont.truetype(font_content_bold_path, 55)
+font_dejavu = ImageFont.truetype(font_dejavu_path, font_size)
+font_khmeros = ImageFont.truetype(font_khmeros_path, font_size)
+font_khmer_moul = ImageFont.truetype(font_khmer_moul_path, font_size)
+font_ocrb = ImageFont.truetype(font_ocrb_path, font_size)
+
+mrz_font = ImageFont.truetype(font_ocrb_path, 50)
+
+width, height = 1575, 1024
+image = Image.new('RGB', (width, height), 'white')
+draw = ImageDraw.Draw(image)
+
+# Flags to control drawing of bounding boxes and labels
+DRAW_BBOX = 1  # Set to False to disable bounding boxes
+DRAW_LABEL = 1  # Set to False to disable labels
+
+def draw_photo(image, draw):
+    photo_path = get_random_image_path("./photos")
+    if photo_path:
+        try:
+            photo = Image.open(photo_path).resize((320, 500)).convert('RGB')
+            x1, y1 = 55, 80
+            x2, y2 = x1 + 320, y1 + 500
+            image.paste(photo, (x1, y1))
+            if DRAW_LABEL:
+                label_font = load_font(font_bokor_path, label_font_size)
+                draw.text((x1, y1 - 20), "Photo", font=label_font, fill="blue")
+            if DRAW_BBOX:
+                draw.rectangle([x1, y1, x2, y2], outline="red")
+            add_bbox_data("photo", x1, y1, x2, y2, "Photo")
+        except Exception as e:
+            print(f"Error loading photo: {e}")
+
+def draw_signature(image, draw):
+    signature_path = get_random_image_path("./signatures")
+    if signature_path:
+        try:
+            signature = Image.open(signature_path).resize((200, 50))
+            sig_x = 115
+            sig_y = 600 if signature.mode == 'RGBA' else 580
+            sig_width, sig_height = 200, 50
+            bbox = [sig_x, sig_y, sig_x + sig_width, sig_y + sig_height]
+            if signature.mode == 'RGBA':
+                image.paste(signature.convert('RGBA'), (sig_x, sig_y), signature.split()[3])
+            else:
+                image.paste(signature.convert('RGB'), (sig_x, sig_y))
+            if DRAW_LABEL:
+                label_font = load_font(font_bokor_path, label_font_size)
+                draw.text((sig_x, sig_y - 20), "Signature", font=label_font, fill="blue")
+            if DRAW_BBOX:
+                draw.rectangle(bbox, outline="red")
+            add_bbox_data("signature", sig_x, sig_y, sig_x + sig_width, sig_y + sig_height, "Signature")
+        except Exception as e:
+            print(f"Error loading signature: {e}")
+    else:
+        print(f"Signature file not found at: {signature_path}")
 
 def draw_segments():
+    draw_photo(image, draw)
+    draw_signature(image, draw)
+
     font_id_num = load_font(font_bokor_path, 50)
     x1, y1 = 1100, 20
     x2, y2 = draw_bbox(draw, x1, y1, text_id_num, font_id_num, "ID Number")
@@ -225,8 +244,21 @@ def draw_segments():
     x2, y2 = draw_bbox_mrz(draw, x1, y1, mrz3, font_mrz, "MRZ3")
     add_bbox_data("mrz3", x1, y1, x2, y2, mrz3)
 
-    add_bbox_data("photo", 55, 80, 375, 580, "Photo")
-    add_bbox_data("signature", 55, 600, 255, 650, "Signature")  # Updated signature bbox
+# Generate data
+text_id_num = generate_id_number()
+khmer_name = generate_khmer_name()
+english_name = generate_english_name()
+dob = generate_dob()
+gender = generate_gender()
+height_val = generate_height()
+pob = generate_place_of_birth()
+address1 = generate_address_1()
+address2 = generate_address_2()
+issue_date, expiry_date = generate_issue_and_expiry_dates()
+identity = "ប្រជ្រុយចុងភ្នែកស្តាំ"
+mrz1 = generate_mrz_1()
+mrz2 = generate_mrz_2()
+mrz3 = generate_mrz_3()
 
 draw_segments()
 image.save('output_image_segm.png')
