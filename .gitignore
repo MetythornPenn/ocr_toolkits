@@ -6,6 +6,8 @@ labels.txt
 donut
 synth_passport
 data
+weights
+synth_khmerid
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
