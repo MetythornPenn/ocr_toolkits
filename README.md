@@ -174,12 +174,39 @@ synthetic_data(
 
 ```
 
+### synthetic data v2 
+- similar to the first version but this second version added different background colors.
+
+```python
+from ocr_toolkits import synthetic_data_v2
+
+#Set parameters
+image_height = 128
+output_folder = "output"
+output_labels_file = "labels.txt"
+text_file_path = "dict.txt"
+repeat = 20  # Generate 4 images for each text
+font_option = [1,2]
+
+#Generate images and lebels
+synthetic_data_v2(
+    file_path=text_file_path,
+    font_option=font_option,
+    image_height=image_height,
+    output_folder=output_folder,
+    output_labels_file=output_labels_file,
+    random_blur=True,
+    repeat=repeat,
+)
+```
+
 ## Parameters
 
 - `image_height`: Height of the generated images in pixels.
 - `output_folder`: Path to the folder where generated images will be saved.
 - `output_labels_file`: Path to the file where labels will be saved.
 - `text_file_path`: Path to the text file containing Khmer text for generation.
+- `repeat`: Generate 4 images for each text (`v2`).
 - `font_option`: List of integers representing font options. 
   - 1 for AKbalthom KhmerLer Regular.
   - 2 for Khmer MEF1 Regular.

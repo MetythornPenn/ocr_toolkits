@@ -101,4 +101,3 @@ def to_grayscale(image_path: str, save: bool = False, save_path: Optional[str] =
             return None
 
     return gray_image
-
